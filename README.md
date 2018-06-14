@@ -33,8 +33,7 @@ If you discover a security vulnerability in rabbitmq-client-wrapper, contact-me.
 ## Dependências
 
 * **[amqplib](https://www.npmjs.com/package/amqplib)**
-* **If you are using the dotenv it is necessary write variables in your .env file as below:**
-* **[dotenv](https://github.com/motdotla/dotenv)**
+* **If you are using the dotenv it is necessary write variables in your [dotenv](https://github.com/motdotla/dotenv) file as below:**
 
     * AMQP_HOST
     * DEFAULT_HOST
