@@ -21,7 +21,7 @@
 ---
 
 ## How it Works!
-Take a look that you have basically two important functions which is Sender and Cosume. Sender you can send message throw RabbitMQ using a method called **sendToQueue** where you **must** use a function from Consume called **consumefromQueue**. 
+Take a look that you have basically two important functions which is Sender and Consume. Sender you can send message throw RabbitMQ using a method called **sendToQueue** where you **must** use a function from Consume called **consumefromQueue**. 
 
 The tool was implemented using an idea of **in** and **out** queues, so is **required identify in the begin of queue if the queue is 'input-' or 'output-'**, for example: input-myQueue, output-myQueue **(the pattern of 'input-' and 'output-' can be changed in .env file)**. 
 
@@ -160,7 +160,7 @@ try{
 ```
 
 
-## Contributors
+## Contributor
 
 > Claudio Djohnnatha Duarte Lourenço ([cdjohnnatha](https://github.com/cdjohnnatha)) cdjohnnatha@gmail.com
 
