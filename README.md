@@ -5,9 +5,9 @@
 
 
 
- **Rabbitmq Client Wrapper** 
- Is created in base of [amqpjs] (https://www.npmjs.com/package/amqpjs) which
- is an architectural pattern for message validation, transformation, and routing. It mediates communication among applications, minimizing the mutual awareness that micro-services should have of each other in order to be able to exchange messages.
+ **Rabbitmq Client Wrapper**
+ The tool you can send/consume messages throw [RabbitMQ](https://www.rabbitmq.com/tutorials/tutorial-one-javascript.html). That is created in base of [amqpjs](https://www.npmjs.com/package/amqpjs) which is an architectural pattern for message validation, transformation, and routing. It mediates communication among applications, minimizing the mutual awareness that micro-services should have of each other in order to be able to exchange messages.
+ 
 
 
 ---
@@ -20,6 +20,62 @@
 ```
 ---
 
+## How it Works!
+Take a look that you have basically two important functions which is Sender and Cosume. Sender you can send message throw RabbitMQ using a method called **sendToQueue** where you **must** use a function from Consume called **consumefromQueue**. 
+
+The tool was implemented using an idea of **in** and **out** queues, so is **required identify in the begin of queue if the queue is 'input-' or 'output-'**, for example: input-myQueue, output-myQueue **(the pattern of 'input-' and 'output-' can be changed in .env file)**. 
+
+### Sender
+The send have just one approach:
+* To send a message throw RabbitMQ is **required** send an id which will identify who or for who will be send a message, the queue name which identify which queue will be used and the message.
+
+#### Example:
+
+```
+const queueSender = require('./lib/queueSender');
+...
+
+queueSender.sendToQueue('my-message-id', 'input-service', 'my message');
+
+// The same approach is used to send a message for an output-queue
+queueSender.sendToQueue('my-message-id', 'output-service', 'my message');
+```
+
+### Consume
+The consume have two approaches:
+* The service which read from an **input-** queue is unnecessary know who send it, so any service which is connected to that **input-** queue can consume the message using the callback function.
+
+#### Example
+```
+try{
+    // service which consume from input-queue
+    queueConsume.consumeFromQueue('', 'input-service', (error, ch, msg, timeoutService) => {
+      // Build a message.
+      const message = BuildMessageBody(msg);
+      // code...
+      // Identify that the process worked successfully.
+      ConsumedSignal(ch, msg, timeoutService);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+```
+
+* The service which will consume from **output-** **MUST IDENTIFY THE ID** to get the properly message. 
+```
+try{
+    // service which consume from input-queue
+    queueConsume.consumeFromQueue('my-message-id', 'output-service', (error, ch, msg, timeoutService) => {
+      // Build a message.
+      const message = BuildMessageBody(msg);
+      // code...
+      // Identify that the process worked successfully.
+      ConsumedSignal(ch, msg, timeoutService);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+```
 
 ## Features
 
@@ -79,22 +135,22 @@ const { BuildMessageBody } = require('./helpers/messageHelper');
 const { ConsumedSignal } = require('./helpers/queueHelper');
 
 // service sending object (as string), string...
-queueSender.sendToQueue(id, 'service_in', 'my message');
+queueSender.sendToQueue('some-id', 'input-service', 'my message');
 // service waiting processed informations from out 
-queueConsume.consumeFromQueue(id, `service_out`, (error, ch, msg, timeout) => {
+queueConsume.consumeFromQueue('some-id', `output-service`, (error, ch, msg, timeout) => {
   const message = BuildMessageBody(msg);
   // code...
   ConsumedSignal(ch, msg, timeout);
 });
 
 try{
-    // service which consume from queue_in
-    queueConsume.consumeFromQueue('', 'service_in', (error, ch, msg, timeoutService) => {
+    // service which consume from input-queue
+    queueConsume.consumeFromQueue('', 'input-service', (error, ch, msg, timeoutService) => {
       const message = BuildMessageBody(msg);
       // code...
       // service which send processed object to out service which will be consumed by 
-      // queue_out
-      queueSender.sendToQueue(String(message.id), 'service_out', 'My service object');
+      // output-queue
+      queueSender.sendToQueue(String(message.id), 'output-service', 'My service object');
       ConsumedSignal(ch, msg, timeoutService);
     });
   } catch (error) {
