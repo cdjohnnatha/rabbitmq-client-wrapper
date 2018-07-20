@@ -1,7 +1,7 @@
 {
   "name": "rabbitmq-client-wrapper",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "engines": {
       "node": ">=9.2.1",
       "npm": "5.5.1"
